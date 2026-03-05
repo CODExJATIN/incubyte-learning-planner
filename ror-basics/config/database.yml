@@ -1,0 +1,15 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: jatin
+  password: password123
+  host: localhost
+  pool: 5
+
+development:
+  <<: *default
+  database: ror_basics_development
+
+test:
+  <<: *default
+  database: ror_basics_test
