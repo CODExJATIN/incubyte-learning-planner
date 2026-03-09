@@ -7,37 +7,51 @@ import { useRouter } from "next/navigation";
 export default function CommentBar({ postId }: { postId: string }) {
     const [commenter, setCommenter] = useState("");
     const [body, setBody] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!commenter.trim() || !body.trim()) return;
 
-        await createComment({ id: "", commenter, body, postId });
-        setCommenter("");
-        setBody("");
-        router.refresh();
+        setIsSubmitting(true);
+        try {
+            await createComment({ id: "", commenter, body, postId });
+            setCommenter("");
+            setBody("");
+            router.refresh();
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded-md mt-4 flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">Add a Comment</h2>
-            <input
-                type="text"
-                placeholder="Your name"
-                value={commenter}
-                onChange={(e) => setCommenter(e.target.value)}
-                className="border p-2 rounded"
-            />
-            <textarea
-                placeholder="Write your comment..."
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                className="border p-2 rounded"
-            />
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                Submit
-            </button>
-        </form>
+        <div className="mt-8 bg-surface border border-border rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">Leave a Comment</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <input
+                    type="text"
+                    placeholder="Your name"
+                    value={commenter}
+                    onChange={(e) => setCommenter(e.target.value)}
+                    className="border border-border px-4 py-2.5 rounded-lg text-text-primary placeholder:text-text-muted bg-white focus:border-border-focus focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+                <textarea
+                    placeholder="Share your thoughts…"
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                    className="border border-border px-4 py-2.5 rounded-lg text-text-primary placeholder:text-text-muted bg-white focus:border-border-focus focus:ring-2 focus:ring-primary/10 transition-all min-h-[100px] resize-y"
+                />
+                <div>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-5 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-hover rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? "Posting…" : "Post Comment"}
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 }

@@ -41,6 +41,12 @@
           "commenter": "Jatin",
           "body": "Im learning Typescript\n",
           "postId": "2"
+        },
+        {
+          "id": "1773069197228",
+          "commenter": "sample",
+          "body": "this is a sample comment\n",
+          "postId": "2"
         }
       ]
     },
@@ -53,12 +59,17 @@
     {
       "id": "a792ca47-0778-4d75-8bb3-082d97a67bfe",
       "title": "updated title",
-      "body": "dcbdjvbdjvhbsdjvbdsjhdbsvjbvjdsvhbdsjhbjbdvs cjx bdjcboacnsnlcksajbcsc bdcjdb vdb jsd cvahgdvwqvdixwuidhwidhnskcjbdscjkbsdc"
+      "body": "this is updated body "
     },
     {
       "id": "af66d92d-571b-49a6-a8b8-4e7110876ada",
       "title": "this is a sample blog",
       "body": "cbdshvcdhgvckghcvsjhcvhgvweudgscgdsvchgdsvcdvcwejcvcvhsdcv dsnc vdncdvndv cdnvcndv cdn vn"
+    },
+    {
+      "id": "11fad36f-09dc-420c-b0a8-4f003124ff5f",
+      "title": "newly created blog",
+      "body": "this it the newly created blog"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
