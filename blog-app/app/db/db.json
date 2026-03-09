@@ -1,5 +1,5 @@
 {
-  "posts": [
+  "blogs": [
     {
       "id": "1",
       "title": "Getting Started with React",
@@ -15,6 +15,12 @@
           "id": "2",
           "commenter": "Bob",
           "body": "I wish you could cover hooks in more detail.",
+          "postId": "1"
+        },
+        {
+          "id": "1773064485161",
+          "commenter": "jatin",
+          "body": "im learning hooks in react",
           "postId": "1"
         }
       ]
@@ -48,6 +54,11 @@
       "id": "a792ca47-0778-4d75-8bb3-082d97a67bfe",
       "title": "updated title",
       "body": "dcbdjvbdjvhbsdjvbdsjhdbsvjbvjdsvhbdsjhbjbdvs cjx bdjcboacnsnlcksajbcsc bdcjdb vdb jsd cvahgdvwqvdixwuidhwidhnskcjbdscjkbsdc"
+    },
+    {
+      "id": "af66d92d-571b-49a6-a8b8-4e7110876ada",
+      "title": "this is a sample blog",
+      "body": "cbdshvcdhgvckghcvsjhcvhgvweudgscgdsvchgdsvcdvcwejcvcvhsdcv dsnc vdncdvndv cdnvcndv cdn vn"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

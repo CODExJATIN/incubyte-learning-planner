@@ -2,28 +2,28 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createPost, getPostById, updatePost } from "@/app/lib/api";
+import { createBlog, getBlogById, updateBlog } from "@/app/lib/api";
 import { Blog } from "@/app/types/Blog";
 
-export default function BlogForm({id}: {id: string}) {
+export default function BlogForm({ id = "" }: { id?: string }) {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const router = useRouter();
 
-    useEffect(()=>{
-        async function fetchBlog(id:string){
-            const post = await getPostById(id);
-            if(post){
+    useEffect(() => {
+        async function fetchBlog(id: string) {
+            const post = await getBlogById(id);
+            if (post) {
                 setTitle(post.title);
                 setBody(post.body);
             }
         }
 
-        if(id){
+        if (id) {
             fetchBlog(id);
         }
 
-    },[])
+    }, [])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -32,14 +32,14 @@ export default function BlogForm({id}: {id: string}) {
 
         console.log(title, body);
 
-        if(id){
-            await updatePost(id, { id, title, body });
-        }else{
-            await createPost({ id: crypto.randomUUID(), title, body });
+        if (id) {
+            await updateBlog(id, { id, title, body });
+        } else {
+            await createBlog({ id: crypto.randomUUID(), title, body });
         }
         setTitle("");
         setBody("");
-        router.refresh();
+        router.push("/");
     }
     return (
         <div className="p-4">
