@@ -26,7 +26,7 @@ export async function createPost(post: Omit<Blog, 'comments'>) {
     return res.json()
 }
 
-export async function updatePost(id: string, post: Blog) {
+export async function updatePost(id: string, post: Omit<Blog, 'comments'>) {
     const res = await fetch(`${BASE_URL}/posts/${id}`, {
         method: 'PUT',
         headers: {

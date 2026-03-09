@@ -1,13 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createPost } from "@/app/lib/api";
+import { createPost, getPostById, updatePost } from "@/app/lib/api";
+import { Blog } from "@/app/types/Blog";
 
-export default function BlogForm() {
+export default function BlogForm({id}: {id: string}) {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const router = useRouter();
+
+    useEffect(()=>{
+        async function fetchBlog(id:string){
+            const post = await getPostById(id);
+            if(post){
+                setTitle(post.title);
+                setBody(post.body);
+            }
+        }
+
+        if(id){
+            fetchBlog(id);
+        }
+
+    },[])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -16,7 +32,11 @@ export default function BlogForm() {
 
         console.log(title, body);
 
-        await createPost({ id: crypto.randomUUID(), title, body });
+        if(id){
+            await updatePost(id, { id, title, body });
+        }else{
+            await createPost({ id: crypto.randomUUID(), title, body });
+        }
         setTitle("");
         setBody("");
         router.refresh();
@@ -41,7 +61,7 @@ export default function BlogForm() {
                     type="submit"
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                    Create
+                    {id ? "Update" : "Create"}
                 </button>
             </form>
         </div>
