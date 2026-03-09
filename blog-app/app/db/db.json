@@ -1,0 +1,49 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "Getting Started with React",
+      "body": "React is a popular JavaScript library for building user interfaces. It allows developers to create reusable UI components and manage application state efficiently.",
+      "comments": [
+        {
+          "id": "1",
+          "commenter": "Alice",
+          "body": "Great introduction! Very helpful for beginners.",
+          "postId": "1"
+        },
+        {
+          "id": "2",
+          "commenter": "Bob",
+          "body": "I wish you could cover hooks in more detail.",
+          "postId": "1"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Understanding TypeScript",
+      "body": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. It adds optional static typing and class-based object-oriented programming to the language.",
+      "comments": [
+        {
+          "id": "3",
+          "commenter": "Charlie",
+          "body": "TypeScript has really improved my code quality!",
+          "postId": "2"
+        },
+        {
+          "id": "1773060439458",
+          "commenter": "Jatin",
+          "body": "Im learning Typescript\n",
+          "postId": "2"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Next.js for Server-Side Rendering",
+      "body": "Next.js is a React framework that enables server-side rendering and static site generation. It simplifies routing, data fetching, and deployment.",
+      "comments": []
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
