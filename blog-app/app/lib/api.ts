@@ -15,7 +15,7 @@ export async function getPostById(id: string) {
     return res.json()
 }
 
-export async function createPost(post: Blog) {
+export async function createPost(post: Omit<Blog, 'comments'>) {
     const res = await fetch(`${BASE_URL}/posts`, {
         method: 'POST',
         headers: {
