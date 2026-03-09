@@ -1,7 +1,17 @@
+"use client";
+
 import { Blog } from "@/app/types/Blog";
 import Link from "next/link";
+import { deleteBlog } from "@/app/lib/api";
+import { useRouter } from "next/navigation";
 
 export default function BlogCard({ blog }: { blog: Blog }) {
+    const router = useRouter();
+    async function handleDelete(id: string) {
+        await deleteBlog(id);
+        router.refresh();
+    }
+
     return (
         <article className="group bg-surface border border-border rounded-xl p-6 hover:shadow-md hover:border-border-focus/50 transition-all duration-300">
             <div className="flex items-start justify-between gap-4">
@@ -33,6 +43,12 @@ export default function BlogCard({ blog }: { blog: Blog }) {
                 >
                     Edit
                 </Link>
+                <button
+                    onClick={() => handleDelete(blog.id)}
+                    className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+                >
+                    Delete
+                </button>
             </div>
         </article>
     )

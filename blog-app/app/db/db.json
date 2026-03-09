@@ -1,31 +1,6 @@
 {
   "blogs": [
     {
-      "id": "1",
-      "title": "Getting Started with React",
-      "body": "React is a popular JavaScript library for building user interfaces. It allows developers to create reusable UI components and manage application state efficiently.",
-      "comments": [
-        {
-          "id": "1",
-          "commenter": "Alice",
-          "body": "Great introduction! Very helpful for beginners.",
-          "postId": "1"
-        },
-        {
-          "id": "2",
-          "commenter": "Bob",
-          "body": "I wish you could cover hooks in more detail.",
-          "postId": "1"
-        },
-        {
-          "id": "1773064485161",
-          "commenter": "jatin",
-          "body": "im learning hooks in react",
-          "postId": "1"
-        }
-      ]
-    },
-    {
       "id": "2",
       "title": "Understanding TypeScript",
       "body": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. It adds optional static typing and class-based object-oriented programming to the language.",
@@ -51,25 +26,17 @@
       ]
     },
     {
-      "id": "3",
-      "title": "Next.js for Server-Side Rendering",
-      "body": "Next.js is a React framework that enables server-side rendering and static site generation. It simplifies routing, data fetching, and deployment.",
-      "comments": []
-    },
-    {
-      "id": "a792ca47-0778-4d75-8bb3-082d97a67bfe",
-      "title": "updated title",
-      "body": "this is updated body "
-    },
-    {
-      "id": "af66d92d-571b-49a6-a8b8-4e7110876ada",
-      "title": "this is a sample blog",
-      "body": "cbdshvcdhgvckghcvsjhcvhgvweudgscgdsvchgdsvcdvcwejcvcvhsdcv dsnc vdncdvndv cdnvcndv cdn vn"
-    },
-    {
-      "id": "11fad36f-09dc-420c-b0a8-4f003124ff5f",
-      "title": "newly created blog",
-      "body": "this it the newly created blog"
+      "id": "739306e0-72b4-4989-8be9-291aa4d95d36",
+      "title": "sample blog",
+      "body": "this is sample blog for testing",
+      "comments": [
+        {
+          "id": "1773070351529",
+          "commenter": "jatin",
+          "body": "interesting blog",
+          "postId": "739306e0-72b4-4989-8be9-291aa4d95d36"
+        }
+      ]
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

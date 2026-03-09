@@ -21,7 +21,7 @@ export async function createBlog(blog: Omit<Blog, 'comments'>) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(blog)
+        body: JSON.stringify({...blog,comments:[]})
     })
     return res.json()
 }
