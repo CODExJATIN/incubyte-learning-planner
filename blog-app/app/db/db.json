@@ -1,0 +1,43 @@
+{
+  "blogs": [
+    {
+      "id": "2",
+      "title": "Understanding TypeScript",
+      "body": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. It adds optional static typing and class-based object-oriented programming to the language.",
+      "comments": [
+        {
+          "id": "3",
+          "commenter": "Charlie",
+          "body": "TypeScript has really improved my code quality!",
+          "postId": "2"
+        },
+        {
+          "id": "1773060439458",
+          "commenter": "Jatin",
+          "body": "Im learning Typescript\n",
+          "postId": "2"
+        },
+        {
+          "id": "1773069197228",
+          "commenter": "sample",
+          "body": "this is a sample comment\n",
+          "postId": "2"
+        }
+      ]
+    },
+    {
+      "id": "739306e0-72b4-4989-8be9-291aa4d95d36",
+      "title": "sample blog",
+      "body": "this is sample blog for testing",
+      "comments": [
+        {
+          "id": "1773070351529",
+          "commenter": "jatin",
+          "body": "interesting blog",
+          "postId": "739306e0-72b4-4989-8be9-291aa4d95d36"
+        }
+      ]
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
