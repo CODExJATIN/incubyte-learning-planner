@@ -3,11 +3,13 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.all
+    @articles = Article.all.includes(:comments)
+    render json: @articles.map { |a| article_as_json(a) }
   end
 
   # GET /articles/1 or /articles/1.json
   def show
+    render json: article_as_json(@article)
   end
 
   # GET /articles/new
@@ -26,7 +28,7 @@ class ArticlesController < ApplicationController
     respond_to do |format|
       if @article.save
         format.html { redirect_to @article, notice: "Article was successfully created." }
-        format.json { render :show, status: :created, location: @article }
+        format.json { render json: article_as_json(@article), status: :created }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @article.errors, status: :unprocessable_entity }
@@ -39,7 +41,7 @@ class ArticlesController < ApplicationController
     respond_to do |format|
       if @article.update(article_params)
         format.html { redirect_to @article, notice: "Article was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @article }
+        format.json { render json: article_as_json(@article), status: :ok }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @article.errors, status: :unprocessable_entity }
@@ -53,18 +55,34 @@ class ArticlesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to articles_path, notice: "Article was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+      format.json { render json: { message: "Article deleted successfully" }, status: :ok }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_article
-      @article = Article.find(params.expect(:id))
+      @article = Article.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def article_params
-      params.expect(article: [ :title, :body ])
+      params.require(:article).permit(:title, :body)
+    end
+
+    # Serialize an article with its comments mapped to the frontend's Comment shape.
+    # The frontend uses `id` as String and `postId` instead of Rails' `article_id`.
+    def article_as_json(article)
+      {
+        id: article.id.to_s,
+        title: article.title,
+        body: article.body,
+        comments: article.comments.map do |c|
+          {
+            id: c.id.to_s,
+            commenter: c.commenter,
+            body: c.body,
+            postId: c.article_id.to_s
+          }
+        end
+      }
     end
 end

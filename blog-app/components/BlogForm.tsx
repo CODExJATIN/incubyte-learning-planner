@@ -33,9 +33,9 @@ export default function BlogForm({ id = "" }: { id?: string }) {
         setIsSubmitting(true);
         try {
             if (id) {
-                await updateBlog(id, { id, title, body });
+                await updateBlog(id, { title, body });
             } else {
-                await createBlog({ id: crypto.randomUUID(), title, body });
+                await createBlog({ title, body });
             }
             setTitle("");
             setBody("");

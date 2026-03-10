@@ -16,7 +16,7 @@ export default function CommentBar({ postId }: { postId: string }) {
 
         setIsSubmitting(true);
         try {
-            await createComment({ id: "", commenter, body, postId });
+            await createComment({ commenter, body, postId });
             setCommenter("");
             setBody("");
             router.refresh();
