@@ -54,6 +54,13 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+
+  # RSpec testing framework for Rails
+  gem "rspec-rails"
+
+  gem "guard"
+  gem "guard-rspec", require: false
 end
 
 group :development do
@@ -65,5 +72,4 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem "rspec-rails"
 end
