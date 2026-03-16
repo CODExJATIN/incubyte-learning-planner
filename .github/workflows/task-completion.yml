@@ -42,9 +42,7 @@ jobs:
 
       - name: Convert Markdown to HTML
         run: |
-          npm install -g marked
-
-          HTML=$(printf "%s" "${{ env.PR_BODY }}" | marked)
+          HTML=$(printf "%s" "${{ env.PR_BODY }}" | npx marked)
 
           echo "PR_BODY_HTML<<EOF" >> $GITHUB_ENV
           echo "$HTML" >> $GITHUB_ENV
