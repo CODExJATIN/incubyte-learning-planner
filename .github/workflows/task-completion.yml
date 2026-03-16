@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Resolve PR data
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -20,14 +21,12 @@ jobs:
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&base=main&per_page=1")
 
-            echo "PR_TITLE=$(echo $PR | jq -r '.[0].title')" >> $GITHUB_ENV
-
+            echo "PR_TITLE=$(echo "$PR" | jq -r '.[0].title')" >> $GITHUB_ENV
             echo "PR_BODY<<EOF" >> $GITHUB_ENV
-            echo "$(echo $PR | jq -r '.[0].body')" >> $GITHUB_ENV
+            echo "$(echo "$PR" | jq -r '.[0].body')" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
-            
-            echo "PR_URL=$(echo $PR | jq -r '.[0].html_url')" >> $GITHUB_ENV
-            echo "PR_NUMBER=$(echo $PR | jq -r '.[0].number')" >> $GITHUB_ENV
+            echo "PR_URL=$(echo "$PR" | jq -r '.[0].html_url')" >> $GITHUB_ENV
+            echo "PR_NUMBER=$(echo "$PR" | jq -r '.[0].number')" >> $GITHUB_ENV
 
           else
             echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
@@ -41,65 +40,84 @@ jobs:
           fi
 
 
+      - name: Convert Markdown to HTML
+        run: |
+          npm install -g marked
+
+          HTML=$(printf "%s" "${{ env.PR_BODY }}" | marked)
+
+          echo "PR_BODY_HTML<<EOF" >> $GITHUB_ENV
+          echo "$HTML" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+
       - name: Send Email via Brevo API
         run: |
+          HTML_CONTENT=$(cat <<EOF
+          <div style="margin: 20px auto; max-width: 600px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; border: 1px solid #d0d7de; border-radius: 8px; background-color: #ffffff; overflow: hidden; box-shadow: 0 1px 3px rgba(31,35,40,0.12);">
+            
+            <div style="background-color: #dafbe1; padding: 12px 16px; border-bottom: 1px solid #d0d7de; display: flex; align-items: center;">
+              <span style="background-color: #1a7f37; color: #ffffff; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-right: 12px; display: inline-block; line-height: 18px;">
+                Completed
+              </span>
+              <span style="color: #1a7f37; font-size: 14px; font-weight: 500;">
+                Task successfully merged into <strong>main</strong>
+              </span>
+            </div>
+
+            <div style="padding: 24px;">
+              
+              <div style="margin-bottom: 24px;">
+                <div style="font-size: 11px; color: #57606a; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                  Task Title
+                </div>
+                <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1f2328; line-height: 1.4;">
+                  ${{ env.PR_TITLE }}
+                </h2>
+              </div>
+
+              <div style="margin-bottom: 24px;">
+                <div style="font-size: 11px; color: #57606a; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                  Description / Notes
+                </div>
+                <div style="background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 16px; font-size: 14px; color: #24292f; line-height: 1.6; min-height: 40px;">
+                  ${{ env.PR_BODY_HTML }}
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid #d0d7de; padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: #57606a; margin-bottom: 16px;">
+                  <div>
+                    <strong style="color: #1f2328;">Repository:</strong> ${{ github.repository }}
+                  </div>
+                  <div>
+                    <strong style="color: #1f2328;">ID:</strong> <span style="color: #8250df; font-weight: 600;">#${{ env.PR_NUMBER }}</span>
+                  </div>
+                </div>
+
+                <div style="padding:10px 12px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;font-size:12px;color:#57606a;">
+                  <span style="font-weight:600;color:#24292f;">Pull Request</span><br>
+                  <span style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;color:#0969da;">
+                    🔗 github.com/CODExJATIN/incubyte-learning-planner/pull/${{ env.PR_NUMBER }}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          EOF
+          )
+
+          JSON_HTML=$(jq -Rs . <<< "$HTML_CONTENT")
+
           curl --request POST \
             --url https://api.brevo.com/v3/smtp/email \
             --header "accept: application/json" \
             --header "api-key:${{ secrets.BREVO_API_KEY }}" \
             --header "content-type: application/json" \
-            --data @- <<EOF
-          {
-            "sender": {
-              "name": "Git Bot",
-              "email": "${{ secrets.FROM_EMAIL }}"
-            },
-            "to": [
-              {
-                "email": "${{ secrets.TO_EMAIL }}",
-                "name": "Jatin"
-              }
-            ],
-            "subject": "Task Completed: ${{ env.PR_TITLE }}",
-            "htmlContent": "<div style='margin: 0 auto; max-width: 600px; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif; border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden; background-color: #ffffff; box-shadow: 0 1px 3px rgba(31,35,40,0.12);'>
-              <div style='background-color: #dafbe1; padding: 12px 16px; border-bottom: 1px solid #d0d7de; display: flex; align-items: center;'>
-                <div style='background-color: #1a7f37; color: #ffffff; border-radius: 2em; padding: 2px 10px; font-size: 12px; font-weight: 600; margin-right: 12px;'>
-                  Completed
-                </div>
-                <span style='font-size: 14px; color: #1a7f37; font-weight: 500;'>
-                  Task successfully merged into <strong>main</strong>
-                </span>
-              </div>
-
-              <div style='padding: 20px;'>
-                <div style='margin-bottom: 16px;'>
-                  <div style='font-size: 12px; color: #57606a; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;'>
-                    Task Title
-                  </div>
-                  <h2 style='margin: 0; font-size: 20px; font-weight: 600; color: #24292f;'>
-                    ${{ env.PR_TITLE }}
-                  </h2>
-                </div>
-
-                <div style='margin-bottom: 24px;'>
-                  <div style='font-size: 12px; color: #57606a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;'>
-                    Description / Notes
-                  </div>
-                  <div style='background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 16px; font-size: 14px; color: #24292f; line-height: 1.6; white-space: pre-wrap;'>
-                    ${{ env.PR_BODY }}
-                  </div>
-                </div>
-
-                <div style='display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid #f0f2f4;'>
-                  <div style='font-size: 13px; color: #57606a;'>
-                    <strong>Repository:</strong> ${{ github.repository }} <br>
-                    <strong>ID:</strong> <span style='color: #8250df; font-weight: 600;'>#${{ env.PR_NUMBER }}</span>
-                  </div>
-                  <a href='${{ env.PR_URL }}' style='background-color: #f6f8fa; color: #24292f; border: 1px solid #d0d7de; padding: 5px 16px; font-size: 14px; font-weight: 600; border-radius: 6px; text-decoration: none;'>
-                    View Task
-                  </a>
-                </div>
-              </div>
-            </div>"
-          }
-          EOF
+            --data "{
+              \"sender\": {\"name\": \"CODExGIT\", \"email\": \"${{ secrets.FROM_EMAIL }}\"},
+              \"to\": [{\"email\": \"${{ secrets.TO_EMAIL }}\", \"name\": \"Jatin\"}],
+              \"subject\": \"Task Completed: ${{ env.PR_TITLE }}\",
+              \"htmlContent\": $JSON_HTML
+            }"
