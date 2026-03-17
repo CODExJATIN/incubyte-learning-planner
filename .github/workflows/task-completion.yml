@@ -115,7 +115,11 @@ jobs:
             --header "content-type: application/json" \
             --data "{
               \"sender\": {\"name\": \"CODExGIT\", \"email\": \"${{ secrets.FROM_EMAIL }}\"},
-              \"to\": [{\"email\": \"${{ secrets.TO_EMAIL }}\", \"name\": \"Jatin\"}],
+              \"to\": [
+                {\"email\": \"${{ secrets.TO_EMAIL }}\", \"name\": \"Jatin\"},
+                {\"email\": \"${{ secrets.TO_EMAIL1 }}\", \"name\": \"${{ secrets.TO_NAME1 }}\"},
+                {\"email\": \"${{ secrets.TO_EMAIL2 }}\", \"name\": \"${{ secrets.TO_NAME2 }}\"}
+              ],
               \"subject\": \"Task Completed: ${{ env.PR_TITLE }}\",
               \"htmlContent\": $JSON_HTML
             }"
