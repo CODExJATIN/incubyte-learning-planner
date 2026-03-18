@@ -54,6 +54,19 @@ export default function SignupPage() {
             />
           </div>
 
+          <div className="group">
+            <label className="block text-sm font-medium text-text-secondary mb-1.5 transition-colors group-focus-within:text-primary">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="password_confirmation"
+              required
+              className="w-full px-5 py-3 border border-border rounded-xl bg-surface/50 text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-4 focus:ring-primary/10 hover:bg-surface transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+
           <button
             type="submit"
             disabled={isPending}

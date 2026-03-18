@@ -5,29 +5,32 @@ import { redirect } from 'next/navigation';
 
 const BASE_URL = 'http://localhost:3000';
 
+/**
+ * Login Server Action
+ * Rails endpoint: POST /login
+ * Expects: { email, password }
+ * Returns: { message, token }
+ */
 export async function login(prevState: any, formData: FormData) {
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
 
-    if (!email || !password) return { error: 'Missing fields' };
+    if (!email || !password) return { error: 'Email and password are required' };
 
     try {
-        // Mocking the backend response since the exact Rails endpoints aren't set up on this branch
-        // const res = await fetch(`${BASE_URL}/login.json`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ user: { email, password } })
-        // });
+        const res = await fetch(`${BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
 
-        // if (!res.ok) {
-        //     return { error: 'Invalid email or password' };
-        // }
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            return { error: data.error || 'Invalid email or password' };
+        }
 
-        // const data = await res.json();
-        // const token = data.token;
-        
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network
-        const token = "mock-jwt-token-for-testing";
+        const data = await res.json();
+        const token = data.token;
 
         if (token) {
             (await cookies()).set('token', token, {
@@ -37,36 +40,54 @@ export async function login(prevState: any, formData: FormData) {
                 path: '/'
             });
         }
-    } catch (err) {
-        return { error: 'Something went wrong. Is backend running?' };
+    } catch {
+        return { error: 'Something went wrong. Is the Rails backend running on port 3000?' };
     }
 
     redirect('/');
 }
 
+/**
+ * Signup Server Action
+ * Rails endpoint: POST /signup
+ * Expects: { email, password, password_confirmation }
+ * Returns: { message } on success
+ * Then auto-logs in the user by calling /login
+ */
 export async function signup(prevState: any, formData: FormData) {
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
+    const passwordConfirmation = formData.get('password_confirmation')?.toString();
 
-    if (!email || !password) return { error: 'Missing fields' };
+    if (!email || !password) return { error: 'Email and password are required' };
+    if (password !== passwordConfirmation) return { error: 'Passwords do not match' };
 
     try {
-        // const res = await fetch(`${BASE_URL}/users.json`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ user: { email, password } })
-        // });
+        // Step 1: Create the user
+        const signupRes = await fetch(`${BASE_URL}/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, password_confirmation: passwordConfirmation })
+        });
 
-        // if (!res.ok) {
-        //     const errBody = await res.json().catch(() => ({}));
-        //     return { error: errBody.error || 'Failed to create account' };
-        // }
+        if (!signupRes.ok) {
+            const errBody = await signupRes.json().catch(() => ({}));
+            return { error: errBody.errors?.join(', ') || 'Failed to create account' };
+        }
 
-        // const data = await res.json();
-        // const token = data.token;
-        
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network
-        const token = "mock-jwt-token-for-testing";
+        // Step 2: Auto-login to get the JWT token
+        const loginRes = await fetch(`${BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (!loginRes.ok) {
+            return { error: 'Account created but login failed. Please try logging in manually.' };
+        }
+
+        const loginData = await loginRes.json();
+        const token = loginData.token;
 
         if (token) {
             (await cookies()).set('token', token, {
@@ -76,13 +97,17 @@ export async function signup(prevState: any, formData: FormData) {
                 path: '/'
             });
         }
-    } catch (err) {
-        return { error: 'Something went wrong. Is backend running?' };
+    } catch {
+        return { error: 'Something went wrong. Is the Rails backend running on port 3000?' };
     }
 
     redirect('/');
 }
 
+/**
+ * Logout Server Action
+ * Simply clears the JWT cookie
+ */
 export async function logout() {
     (await cookies()).delete('token');
     redirect('/');

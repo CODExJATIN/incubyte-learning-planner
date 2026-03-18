@@ -1,11 +1,25 @@
 class ApplicationController < ActionController::Base
   # Skip browser version enforcement for JSON API requests (Next.js frontend).
   # allow_browser is intentionally omitted — it's for full HTML browser apps only.
+  attr_reader :current_user
+
+  def authenticate_user
+    header = request.headers["Authorization"]
+    token = header.split(" ").last if header
+    
+    decoded = JsonWebToken.decode(token)
+
+    if decoded
+      @current_user = User.find(decoded[:user_id])
+    else
+      render json: {error: "Unauthorized"}, status: :unauthorized unless @current_user
+    end
+  end
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
   # Disable CSRF token verification for JSON API requests.
   # The Next.js frontend uses CORS headers, not Rails session-based CSRF tokens.
-  protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  protect_from_forgery with: :null_session, if: -> { request.format.json? || request.content_type&.include?("application/json") }
 end
