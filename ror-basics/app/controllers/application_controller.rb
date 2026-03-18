@@ -21,5 +21,5 @@ class ApplicationController < ActionController::Base
 
   # Disable CSRF token verification for JSON API requests.
   # The Next.js frontend uses CORS headers, not Rails session-based CSRF tokens.
-  protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  protect_from_forgery with: :null_session, if: -> { request.format.json? || request.content_type&.include?("application/json") }
 end
