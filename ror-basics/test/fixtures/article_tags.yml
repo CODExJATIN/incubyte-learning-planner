@@ -1,0 +1,19 @@
+rails_article_rails_tag:
+  article: rails_article
+  tag: rails
+
+rails_article_ruby_tag:
+  article: rails_article
+  tag: ruby
+
+react_article_javascript_tag:
+  article: react_article
+  tag: javascript
+
+testing_article_testing_tag:
+  article: testing_article
+  tag: testing
+
+testing_article_rails_tag:
+  article: testing_article
+  tag: rails

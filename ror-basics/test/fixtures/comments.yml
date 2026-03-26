@@ -1,11 +1,14 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+first_comment:
+  article: rails_article
+  commenter: Bob
+  body: Great article about Rails!
 
-one:
-  commenter: MyString
-  body: MyText
-  article: one
+second_comment:
+  article: rails_article
+  commenter: Charlie
+  body: Very informative, thanks!
 
-two:
-  commenter: MyString
-  body: MyText
-  article: two
+third_comment:
+  article: react_article
+  commenter: Alice
+  body: Nice introduction to React.
