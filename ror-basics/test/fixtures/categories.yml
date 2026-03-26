@@ -1,0 +1,19 @@
+technology:
+  name: Technology
+  parent_id:
+
+programming:
+  name: Programming
+  parent: technology
+
+ruby_lang:
+  name: Ruby
+  parent: programming
+
+javascript_lang:
+  name: JavaScript
+  parent: programming
+
+lifestyle:
+  name: Lifestyle
+  parent_id:

@@ -2,9 +2,37 @@ class ArticlesController < ApplicationController
   before_action :set_article, only: %i[ show edit update destroy ]
 
   # GET /articles or /articles.json
+  # Supports pagination (?page=1&per_page=10) and search (?q=search_term)
   def index
-    @articles = Article.all.includes(:comments)
-    render json: @articles.map { |a| article_as_json(a) }
+    @articles = Article.includes(:comments, :tags, :user, :category)
+
+    # Search functionality
+    if params[:q].present?
+      @articles = @articles.search(params[:q])
+    end
+
+    # Filter by category
+    if params[:category_id].present?
+      @articles = @articles.where(category_id: params[:category_id])
+    end
+
+    # Filter by tag
+    if params[:tag].present?
+      @articles = @articles.joins(:tags).where("tags.name ILIKE ?", "%#{params[:tag]}%").distinct
+    end
+
+    # Pagination
+    @articles = @articles.page(params[:page]).per(params[:per_page] || 10)
+
+    render json: {
+      articles: @articles.map { |a| article_as_json(a) },
+      pagination: {
+        current_page: @articles.current_page,
+        total_pages: @articles.total_pages,
+        total_count: @articles.total_count,
+        per_page: @articles.limit_value
+      }
+    }
   end
 
   # GET /articles/1 or /articles/1.json
@@ -25,6 +53,13 @@ class ArticlesController < ApplicationController
   def create
     @article = Article.new(article_params)
 
+    # Handle tag_names param: find or create tags and assign them
+    if params[:article][:tag_names].present?
+      tag_names = params[:article][:tag_names]
+      tag_names = tag_names.split(",").map(&:strip) if tag_names.is_a?(String)
+      @article.tags = tag_names.map { |name| Tag.find_or_create_by!(name: name.downcase) }
+    end
+
     respond_to do |format|
       if @article.save
         format.html { redirect_to @article, notice: "Article was successfully created." }
@@ -38,6 +73,13 @@ class ArticlesController < ApplicationController
 
   # PATCH/PUT /articles/1 or /articles/1.json
   def update
+    # Handle tag_names param
+    if params[:article][:tag_names].present?
+      tag_names = params[:article][:tag_names]
+      tag_names = tag_names.split(",").map(&:strip) if tag_names.is_a?(String)
+      @article.tags = tag_names.map { |name| Tag.find_or_create_by!(name: name.downcase) }
+    end
+
     respond_to do |format|
       if @article.update(article_params)
         format.html { redirect_to @article, notice: "Article was successfully updated.", status: :see_other }
@@ -61,20 +103,22 @@ class ArticlesController < ApplicationController
 
   private
     def set_article
-      @article = Article.find(params[:id])
+      @article = Article.includes(:comments, :tags, :user, :category).find(params[:id])
     end
 
     def article_params
-      params.require(:article).permit(:title, :body)
+      params.require(:article).permit(:title, :body, :user_id, :category_id)
     end
 
-    # Serialize an article with its comments mapped to the frontend's Comment shape.
-    # The frontend uses `id` as String and `postId` instead of Rails' `article_id`.
+    # Serialize an article with all associations
     def article_as_json(article)
       {
         id: article.id.to_s,
         title: article.title,
         body: article.body,
+        user: article.user ? { id: article.user.id.to_s, email: article.user.email } : nil,
+        category: article.category ? { id: article.category.id.to_s, name: article.category.name } : nil,
+        tags: article.tags.map { |t| { id: t.id.to_s, name: t.name } },
         comments: article.comments.map do |c|
           {
             id: c.id.to_s,

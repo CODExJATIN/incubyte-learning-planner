@@ -1,9 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+rails_article:
+  title: Getting Started with Rails
+  body: Rails is a great framework for building web applications.
+  user: alice
+  category: ruby_lang
 
-one:
-  title: MyString
-  body: MyText
+react_article:
+  title: React Fundamentals
+  body: React is a JavaScript library for building user interfaces.
+  user: bob
+  category: javascript_lang
 
-two:
-  title: MyString
-  body: MyText
+testing_article:
+  title: Testing Best Practices
+  body: Testing is essential for building reliable applications.
+  user: alice
+  category: programming

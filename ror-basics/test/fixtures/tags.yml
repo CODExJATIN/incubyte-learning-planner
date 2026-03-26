@@ -1,0 +1,14 @@
+rails:
+  name: rails
+
+ruby:
+  name: ruby
+
+javascript:
+  name: javascript
+
+testing:
+  name: testing
+
+beginner:
+  name: beginner
