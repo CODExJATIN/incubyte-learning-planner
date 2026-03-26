@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 const BASE_URL = 'http://localhost:3000';
 
-/**
+ /**
  * Login Server Action
  * Rails endpoint: POST /login
  * Expects: { email, password }
